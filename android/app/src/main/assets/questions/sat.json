@@ -1,0 +1,176 @@
+{
+  "examType": "SAT",
+  "version": "1.0.0",
+  "questions": [
+    {
+      "id": "sat-math-001",
+      "examType": "SAT",
+      "subject": "Math",
+      "topic": "Algebra",
+      "difficulty": "easy",
+      "format": "multiple-choice",
+      "text": "If 3x + 7 = 22, what is the value of x?",
+      "options": [
+        { "id": "A", "text": "3" },
+        { "id": "B", "text": "5" },
+        { "id": "C", "text": "7" },
+        { "id": "D", "text": "9" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "Subtract 7 from both sides: 3x = 15. Divide by 3: x = 5."
+    },
+    {
+      "id": "sat-math-002",
+      "examType": "SAT",
+      "subject": "Math",
+      "topic": "Algebra",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "Which of the following is equivalent to (x² - 9) / (x - 3)?",
+      "options": [
+        { "id": "A", "text": "x - 3" },
+        { "id": "B", "text": "x + 3" },
+        { "id": "C", "text": "x² + 3" },
+        { "id": "D", "text": "x - 9" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "x² - 9 = (x - 3)(x + 3). Dividing by (x - 3) gives x + 3, for x ≠ 3."
+    },
+    {
+      "id": "sat-math-003",
+      "examType": "SAT",
+      "subject": "Math",
+      "topic": "Data Analysis",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "A store sells apples for $1.20 each and oranges for $0.80 each. If a customer buys a total of 10 fruits and pays $10.00, how many apples did they buy?",
+      "options": [
+        { "id": "A", "text": "3" },
+        { "id": "B", "text": "4" },
+        { "id": "C", "text": "5" },
+        { "id": "D", "text": "6" }
+      ],
+      "correctOptionId": "C",
+      "explanation": "Let a = apples. a + (10 - a) = 10. 1.20a + 0.80(10 - a) = 10 → 0.40a + 8 = 10 → a = 5."
+    },
+    {
+      "id": "sat-math-004",
+      "examType": "SAT",
+      "subject": "Math",
+      "topic": "Geometry",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "A circle has a circumference of 16π. What is the area of the circle?",
+      "options": [
+        { "id": "A", "text": "32π" },
+        { "id": "B", "text": "64π" },
+        { "id": "C", "text": "128π" },
+        { "id": "D", "text": "256π" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "C = 2πr = 16π → r = 8. Area = πr² = π(8²) = 64π."
+    },
+    {
+      "id": "sat-math-005",
+      "examType": "SAT",
+      "subject": "Math",
+      "topic": "Functions",
+      "difficulty": "hard",
+      "format": "multiple-choice",
+      "text": "If f(x) = 2x² - 3x + 1, what is f(-2)?",
+      "options": [
+        { "id": "A", "text": "3" },
+        { "id": "B", "text": "11" },
+        { "id": "C", "text": "15" },
+        { "id": "D", "text": "19" }
+      ],
+      "correctOptionId": "C",
+      "explanation": "f(-2) = 2(-2)² - 3(-2) + 1 = 2(4) + 6 + 1 = 8 + 6 + 1 = 15."
+    },
+    {
+      "id": "sat-rw-001",
+      "examType": "SAT",
+      "subject": "Reading & Writing",
+      "topic": "Grammar",
+      "difficulty": "easy",
+      "format": "multiple-choice",
+      "text": "Choose the grammatically correct sentence.",
+      "options": [
+        { "id": "A", "text": "Neither the students nor the teacher were prepared." },
+        { "id": "B", "text": "Neither the students nor the teacher was prepared." },
+        { "id": "C", "text": "Neither the students nor the teacher are prepared." },
+        { "id": "D", "text": "Neither the students nor the teacher is prepared." }
+      ],
+      "correctOptionId": "B",
+      "explanation": "With 'neither...nor', the verb agrees with the subject closest to it. 'Teacher' is singular, so use 'was'."
+    },
+    {
+      "id": "sat-rw-002",
+      "examType": "SAT",
+      "subject": "Reading & Writing",
+      "topic": "Vocabulary in Context",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "In the sentence 'The scientist's hypothesis was corroborated by three independent studies,' the word 'corroborated' most nearly means:",
+      "options": [
+        { "id": "A", "text": "challenged" },
+        { "id": "B", "text": "supported" },
+        { "id": "C", "text": "dismissed" },
+        { "id": "D", "text": "complicated" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "'Corroborate' means to confirm or support with evidence. Three independent studies supporting a hypothesis would corroborate it."
+    },
+    {
+      "id": "sat-rw-003",
+      "examType": "SAT",
+      "subject": "Reading & Writing",
+      "topic": "Punctuation",
+      "difficulty": "easy",
+      "format": "multiple-choice",
+      "text": "Which sentence uses the semicolon correctly?",
+      "options": [
+        { "id": "A", "text": "She studied hard; but she still failed." },
+        { "id": "B", "text": "She studied hard; she still failed." },
+        { "id": "C", "text": "She studied; hard for the exam." },
+        { "id": "D", "text": "She; studied hard for the exam." }
+      ],
+      "correctOptionId": "B",
+      "explanation": "A semicolon connects two independent clauses without a conjunction. Option B correctly joins two complete sentences."
+    },
+    {
+      "id": "sat-math-006",
+      "examType": "SAT",
+      "subject": "Math",
+      "topic": "Statistics",
+      "difficulty": "hard",
+      "format": "multiple-choice",
+      "text": "The mean of five numbers is 12. If four of the numbers are 8, 10, 14, and 16, what is the fifth number?",
+      "options": [
+        { "id": "A", "text": "10" },
+        { "id": "B", "text": "12" },
+        { "id": "C", "text": "14" },
+        { "id": "D", "text": "16" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "Sum of five numbers = 5 × 12 = 60. Known sum = 8 + 10 + 14 + 16 = 48. Fifth number = 60 - 48 = 12."
+    },
+    {
+      "id": "sat-math-007",
+      "examType": "SAT",
+      "subject": "Math",
+      "topic": "Linear Equations",
+      "difficulty": "hard",
+      "format": "multiple-choice",
+      "text": "Line l passes through points (2, 5) and (4, 11). What is the y-intercept of line l?",
+      "options": [
+        { "id": "A", "text": "-1" },
+        { "id": "B", "text": "0" },
+        { "id": "C", "text": "1" },
+        { "id": "D", "text": "3" }
+      ],
+      "correctOptionId": "A",
+      "explanation": "Slope = (11-5)/(4-2) = 3. Using point (2,5): 5 = 3(2) + b → b = -1. Y-intercept is -1."
+    }
+  ]
+}

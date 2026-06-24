@@ -1,0 +1,176 @@
+{
+  "examType": "GRE",
+  "version": "1.0.0",
+  "questions": [
+    {
+      "id": "gre-verbal-001",
+      "examType": "GRE",
+      "subject": "Verbal Reasoning",
+      "topic": "Vocabulary",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "The professor's lecture was so _______ that many students struggled to stay awake.",
+      "options": [
+        { "id": "A", "text": "riveting" },
+        { "id": "B", "text": "contentious" },
+        { "id": "C", "text": "soporific" },
+        { "id": "D", "text": "erudite" }
+      ],
+      "correctOptionId": "C",
+      "explanation": "'Soporific' means tending to induce sleep or drowsiness — fitting for a lecture that made students struggle to stay awake."
+    },
+    {
+      "id": "gre-verbal-002",
+      "examType": "GRE",
+      "subject": "Verbal Reasoning",
+      "topic": "Vocabulary",
+      "difficulty": "hard",
+      "format": "multiple-choice",
+      "text": "The diplomat's _______ response managed to satisfy all parties without committing to any specific position.",
+      "options": [
+        { "id": "A", "text": "truculent" },
+        { "id": "B", "text": "laconic" },
+        { "id": "C", "text": "perspicacious" },
+        { "id": "D", "text": "equivocal" }
+      ],
+      "correctOptionId": "D",
+      "explanation": "'Equivocal' means deliberately ambiguous or unclear. An equivocal response intentionally avoids commitment to any position."
+    },
+    {
+      "id": "gre-verbal-003",
+      "examType": "GRE",
+      "subject": "Verbal Reasoning",
+      "topic": "Antonyms",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "Which word is most nearly OPPOSITE in meaning to 'PRODIGAL'?",
+      "options": [
+        { "id": "A", "text": "Wasteful" },
+        { "id": "B", "text": "Frugal" },
+        { "id": "C", "text": "Generous" },
+        { "id": "D", "text": "Extravagant" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "'Prodigal' means recklessly wasteful. Its opposite is 'frugal,' meaning sparing or economical with resources."
+    },
+    {
+      "id": "gre-verbal-004",
+      "examType": "GRE",
+      "subject": "Verbal Reasoning",
+      "topic": "Vocabulary",
+      "difficulty": "hard",
+      "format": "multiple-choice",
+      "text": "Her _______ nature made it difficult for colleagues to predict her reactions; she could be warm one moment and cold the next.",
+      "options": [
+        { "id": "A", "text": "mercurial" },
+        { "id": "B", "text": "sanguine" },
+        { "id": "C", "text": "phlegmatic" },
+        { "id": "D", "text": "stolid" }
+      ],
+      "correctOptionId": "A",
+      "explanation": "'Mercurial' describes someone subject to sudden changes of mood — volatile and unpredictable, matching the description perfectly."
+    },
+    {
+      "id": "gre-quant-001",
+      "examType": "GRE",
+      "subject": "Quantitative Reasoning",
+      "topic": "Number Theory",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "If n is a positive integer and n² is divisible by 18, what is the smallest possible value of n?",
+      "options": [
+        { "id": "A", "text": "3" },
+        { "id": "B", "text": "6" },
+        { "id": "C", "text": "9" },
+        { "id": "D", "text": "18" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "18 = 2 × 3². For n² to be divisible by 18, n must supply at least one factor of 2 and one of 3. Smallest n = 6 (since 6² = 36 = 2 × 18)."
+    },
+    {
+      "id": "gre-quant-002",
+      "examType": "GRE",
+      "subject": "Quantitative Reasoning",
+      "topic": "Geometry",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "In a right triangle, one leg has length 5 and the hypotenuse has length 13. What is the area of the triangle?",
+      "options": [
+        { "id": "A", "text": "30" },
+        { "id": "B", "text": "32.5" },
+        { "id": "C", "text": "60" },
+        { "id": "D", "text": "65" }
+      ],
+      "correctOptionId": "A",
+      "explanation": "Other leg = √(13² - 5²) = √(169 - 25) = √144 = 12. Area = (1/2)(5)(12) = 30."
+    },
+    {
+      "id": "gre-quant-003",
+      "examType": "GRE",
+      "subject": "Quantitative Reasoning",
+      "topic": "Algebra",
+      "difficulty": "hard",
+      "format": "multiple-choice",
+      "text": "If |2x - 6| < 4, which of the following represents all possible values of x?",
+      "options": [
+        { "id": "A", "text": "1 < x < 5" },
+        { "id": "B", "text": "x < 1 or x > 5" },
+        { "id": "C", "text": "2 < x < 6" },
+        { "id": "D", "text": "x < 2 or x > 6" }
+      ],
+      "correctOptionId": "A",
+      "explanation": "|2x - 6| < 4 → -4 < 2x - 6 < 4 → 2 < 2x < 10 → 1 < x < 5."
+    },
+    {
+      "id": "gre-quant-004",
+      "examType": "GRE",
+      "subject": "Quantitative Reasoning",
+      "topic": "Probability",
+      "difficulty": "hard",
+      "format": "multiple-choice",
+      "text": "A bag contains 4 red marbles and 6 blue marbles. If two marbles are drawn without replacement, what is the probability that both are red?",
+      "options": [
+        { "id": "A", "text": "2/15" },
+        { "id": "B", "text": "4/25" },
+        { "id": "C", "text": "8/45" },
+        { "id": "D", "text": "1/6" }
+      ],
+      "correctOptionId": "A",
+      "explanation": "P(first red) = 4/10. P(second red | first red) = 3/9. P(both red) = (4/10)(3/9) = 12/90 = 2/15."
+    },
+    {
+      "id": "gre-verbal-005",
+      "examType": "GRE",
+      "subject": "Verbal Reasoning",
+      "topic": "Reading Comprehension",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "The passage implies that the author views excessive government regulation as:",
+      "options": [
+        { "id": "A", "text": "A necessary safeguard for public welfare" },
+        { "id": "B", "text": "An obstacle to economic innovation" },
+        { "id": "C", "text": "Indifferent to market outcomes" },
+        { "id": "D", "text": "Beneficial only for large corporations" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "Throughout the passage, the author uses language ('stifling,' 'impedes') that frames regulation negatively in relation to innovation and economic growth."
+    },
+    {
+      "id": "gre-quant-005",
+      "examType": "GRE",
+      "subject": "Quantitative Reasoning",
+      "topic": "Data Interpretation",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "A company's revenue grew from $200,000 to $350,000 over three years. What was the approximate percentage increase?",
+      "options": [
+        { "id": "A", "text": "42%" },
+        { "id": "B", "text": "57%" },
+        { "id": "C", "text": "75%" },
+        { "id": "D", "text": "83%" }
+      ],
+      "correctOptionId": "C",
+      "explanation": "Percentage increase = ((350,000 - 200,000) / 200,000) × 100 = (150,000 / 200,000) × 100 = 75%."
+    }
+  ]
+}

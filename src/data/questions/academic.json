@@ -1,0 +1,210 @@
+{
+  "examType": "Academic",
+  "version": "1.0.0",
+  "questions": [
+    {
+      "id": "acad-bio-001",
+      "examType": "Academic",
+      "subject": "Biology",
+      "topic": "Cell Biology",
+      "difficulty": "easy",
+      "format": "multiple-choice",
+      "text": "Which organelle is known as the 'powerhouse of the cell' because it produces ATP through cellular respiration?",
+      "options": [
+        { "id": "A", "text": "Nucleus" },
+        { "id": "B", "text": "Ribosome" },
+        { "id": "C", "text": "Mitochondria" },
+        { "id": "D", "text": "Golgi apparatus" }
+      ],
+      "correctOptionId": "C",
+      "explanation": "Mitochondria generate most of the cell's ATP supply through cellular respiration, earning them the nickname 'powerhouse of the cell'."
+    },
+    {
+      "id": "acad-bio-002",
+      "examType": "Academic",
+      "subject": "Biology",
+      "topic": "Genetics",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "In a monohybrid cross between two heterozygous individuals (Aa × Aa), what is the probability of producing a homozygous recessive offspring?",
+      "options": [
+        { "id": "A", "text": "0%" },
+        { "id": "B", "text": "25%" },
+        { "id": "C", "text": "50%" },
+        { "id": "D", "text": "75%" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "The Punnett square gives AA : Aa : aa = 1:2:1. The homozygous recessive (aa) genotype appears in 1 out of 4 = 25% of offspring."
+    },
+    {
+      "id": "acad-chem-001",
+      "examType": "Academic",
+      "subject": "Chemistry",
+      "topic": "Periodic Table",
+      "difficulty": "easy",
+      "format": "multiple-choice",
+      "text": "What is the atomic number of Carbon?",
+      "options": [
+        { "id": "A", "text": "4" },
+        { "id": "B", "text": "6" },
+        { "id": "C", "text": "8" },
+        { "id": "D", "text": "12" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "Carbon (C) has atomic number 6, meaning it has 6 protons in its nucleus. It is in Group 14, Period 2 of the periodic table."
+    },
+    {
+      "id": "acad-chem-002",
+      "examType": "Academic",
+      "subject": "Chemistry",
+      "topic": "Chemical Reactions",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "In the reaction: 2H₂ + O₂ → 2H₂O, which substance is oxidized?",
+      "options": [
+        { "id": "A", "text": "H₂O" },
+        { "id": "B", "text": "O₂" },
+        { "id": "C", "text": "H₂" },
+        { "id": "D", "text": "Both H₂ and O₂" }
+      ],
+      "correctOptionId": "C",
+      "explanation": "Hydrogen (H₂) is oxidized — it loses electrons and its oxidation state increases from 0 to +1. Oxygen is reduced (gains electrons)."
+    },
+    {
+      "id": "acad-phys-001",
+      "examType": "Academic",
+      "subject": "Physics",
+      "topic": "Mechanics",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "An object is dropped from rest and falls freely for 3 seconds. What is its velocity just before hitting the ground? (g = 10 m/s²)",
+      "options": [
+        { "id": "A", "text": "10 m/s" },
+        { "id": "B", "text": "20 m/s" },
+        { "id": "C", "text": "30 m/s" },
+        { "id": "D", "text": "45 m/s" }
+      ],
+      "correctOptionId": "C",
+      "explanation": "Using v = u + at: v = 0 + (10)(3) = 30 m/s."
+    },
+    {
+      "id": "acad-phys-002",
+      "examType": "Academic",
+      "subject": "Physics",
+      "topic": "Electricity",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "A circuit has a voltage of 12V and a resistance of 4Ω. What is the current flowing through it?",
+      "options": [
+        { "id": "A", "text": "0.33 A" },
+        { "id": "B", "text": "3 A" },
+        { "id": "C", "text": "8 A" },
+        { "id": "D", "text": "48 A" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "Using Ohm's Law: I = V/R = 12/4 = 3 A."
+    },
+    {
+      "id": "acad-hist-001",
+      "examType": "Academic",
+      "subject": "History",
+      "topic": "World History",
+      "difficulty": "easy",
+      "format": "multiple-choice",
+      "text": "In which year did World War II end?",
+      "options": [
+        { "id": "A", "text": "1943" },
+        { "id": "B", "text": "1944" },
+        { "id": "C", "text": "1945" },
+        { "id": "D", "text": "1946" }
+      ],
+      "correctOptionId": "C",
+      "explanation": "World War II ended in 1945 — Germany surrendered on May 8 (V-E Day) and Japan surrendered on September 2 (V-J Day)."
+    },
+    {
+      "id": "acad-hist-002",
+      "examType": "Academic",
+      "subject": "History",
+      "topic": "US History",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "Which U.S. Supreme Court case established the principle of judicial review?",
+      "options": [
+        { "id": "A", "text": "Brown v. Board of Education" },
+        { "id": "B", "text": "Marbury v. Madison" },
+        { "id": "C", "text": "McCulloch v. Maryland" },
+        { "id": "D", "text": "Roe v. Wade" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "Marbury v. Madison (1803) established the principle of judicial review, affirming the Supreme Court's authority to strike down laws that violate the Constitution."
+    },
+    {
+      "id": "acad-math-001",
+      "examType": "Academic",
+      "subject": "Mathematics",
+      "topic": "Trigonometry",
+      "difficulty": "medium",
+      "format": "multiple-choice",
+      "text": "What is the value of sin(30°)?",
+      "options": [
+        { "id": "A", "text": "√3/2" },
+        { "id": "B", "text": "1/2" },
+        { "id": "C", "text": "√2/2" },
+        { "id": "D", "text": "1" }
+      ],
+      "correctOptionId": "B",
+      "explanation": "sin(30°) = 1/2. This is one of the standard trigonometric values: sin(30°) = 0.5, cos(30°) = √3/2."
+    },
+    {
+      "id": "acad-math-002",
+      "examType": "Academic",
+      "subject": "Mathematics",
+      "topic": "Calculus",
+      "difficulty": "hard",
+      "format": "multiple-choice",
+      "text": "What is the derivative of f(x) = x³ - 4x² + 2x - 7?",
+      "options": [
+        { "id": "A", "text": "3x² - 8x + 2" },
+        { "id": "B", "text": "3x² - 4x + 2" },
+        { "id": "C", "text": "x² - 8x + 2" },
+        { "id": "D", "text": "3x³ - 8x² + 2x" }
+      ],
+      "correctOptionId": "A",
+      "explanation": "Using the power rule: d/dx(x³) = 3x², d/dx(-4x²) = -8x, d/dx(2x) = 2, d/dx(-7) = 0. So f'(x) = 3x² - 8x + 2."
+    },
+    {
+      "id": "acad-lit-001",
+      "examType": "Academic",
+      "subject": "Literature",
+      "topic": "Literary Devices",
+      "difficulty": "easy",
+      "format": "multiple-choice",
+      "text": "In the phrase 'The wind whispered through the trees,' which literary device is used?",
+      "options": [
+        { "id": "A", "text": "Simile" },
+        { "id": "B", "text": "Metaphor" },
+        { "id": "C", "text": "Personification" },
+        { "id": "D", "text": "Alliteration" }
+      ],
+      "correctOptionId": "C",
+      "explanation": "Personification gives human qualities (whispering) to a non-human entity (wind). The wind cannot literally whisper — that is a human action."
+    },
+    {
+      "id": "acad-phys-003",
+      "examType": "Academic",
+      "subject": "Physics",
+      "topic": "Thermodynamics",
+      "difficulty": "hard",
+      "format": "multiple-choice",
+      "text": "According to the Second Law of Thermodynamics, which of the following always increases in an isolated system?",
+      "options": [
+        { "id": "A", "text": "Temperature" },
+        { "id": "B", "text": "Pressure" },
+        { "id": "C", "text": "Entropy" },
+        { "id": "D", "text": "Internal energy" }
+      ],
+      "correctOptionId": "C",
+      "explanation": "The Second Law of Thermodynamics states that the total entropy of an isolated system always increases over time, or at best remains constant in reversible processes."
+    }
+  ]
+}

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">examApp</string>
+    <string name="widget_description">Study flashcard widget — answer questions from your home screen</string>
 </resources>

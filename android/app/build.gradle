@@ -1,4 +1,11 @@
 apply plugin: "com.android.application"
+
+// Copy question JSON files into Android assets so the home screen widget can read them natively
+task copyQuestionsToAssets(type: Copy) {
+    from '../../src/data/questions'
+    into 'src/main/assets/questions'
+}
+preBuild.dependsOn copyQuestionsToAssets
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
