@@ -6,6 +6,7 @@ import type {RootStackParamList} from './src/navigation/types';
 import HomeScreen from './src/screens/HomeScreen';
 import ExamListScreen from './src/screens/ExamListScreen';
 import QuizScreen from './src/screens/QuizScreen';
+import AppLockScreen from './src/screens/AppLockScreen';
 import {ProgressProvider} from './src/store/ProgressContext';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -42,6 +43,11 @@ export default function App() {
               options={({route}) => ({
                 title: route.params.subject ?? route.params.examType ?? 'Quiz',
               })}
+            />
+            <Stack.Screen
+              name="AppLock"
+              component={AppLockScreen}
+              options={{title: 'App Lock'}}
             />
           </Stack.Navigator>
         </NavigationContainer>

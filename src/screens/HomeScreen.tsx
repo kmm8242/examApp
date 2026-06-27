@@ -1,41 +1,48 @@
 import React from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import type { ExamType } from '../types/question';
-import {
-  getAvailableExamTypes,
-  getTotalQuestionCount,
-} from '../data/questionLoader';
-import { useProgress } from '../store/ProgressContext';
-import type { HomeScreenProps } from '../navigation/types';
+import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import type {ExamType} from '../types/question';
+import {getAvailableExamTypes, getTotalQuestionCount} from '../data/questionLoader';
+import {useProgress} from '../store/ProgressContext';
+import type {HomeScreenProps} from '../navigation/types';
 
 const EXAM_META: Record<
   ExamType,
-  { label: string; color: string; description: string }
+  {label: string; color: string; bg: string; icon: string; description: string}
 > = {
   SAT: {
     label: 'SAT',
-    color: '#4F46E5',
+    color: '#6366F1',
+    bg: '#EEF2FF',
+    icon: '📐',
     description: 'Math · Reading & Writing',
   },
   GRE: {
     label: 'GRE',
     color: '#0891B2',
+    bg: '#E0F2FE',
+    icon: '📚',
     description: 'Verbal · Quantitative',
   },
   Academic: {
     label: 'Academic',
     color: '#059669',
+    bg: '#ECFDF5',
+    icon: '🔬',
     description: 'Biology · Chemistry · Physics · History · Math',
   },
   Custom: {
     label: 'Custom',
     color: '#D97706',
+    bg: '#FFFBEB',
+    icon: '✏️',
     description: 'Your own question sets',
   },
 };
 
-export default function HomeScreen({ navigation }: HomeScreenProps) {
-  const { progress } = useProgress();
+export default function HomeScreen({navigation}: HomeScreenProps) {
+  const insets = useSafeAreaInsets();
+  const {progress} = useProgress();
   const examTypes = getAvailableExamTypes();
 
   const accuracy =
@@ -45,59 +52,99 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Study Mode</Text>
-        <Text style={styles.subtitle}>Pick an exam to start practicing</Text>
+      {/* Dark hero header */}
+      <View style={[styles.hero, {paddingTop: insets.top + 16}]}>
+        <Text style={styles.heroEyebrow}>EXAM PREP</Text>
+        <Text style={styles.heroTitle}>Study Mode</Text>
+        <Text style={styles.heroSub}>Pick an exam to start practicing</Text>
       </View>
-
-      {progress.totalAnswered > 0 && (
-        <View style={styles.statsBar}>
-          <Stat label="Answered" value={String(progress.totalAnswered)} />
-          <View style={styles.statDivider} />
-          <Stat label="Correct" value={String(progress.totalCorrect)} />
-          <View style={styles.statDivider} />
-          <Stat label="Accuracy" value={`${accuracy}%`} />
-        </View>
-      )}
 
       <FlatList
         data={examTypes}
         keyExtractor={item => item}
-        contentContainerStyle={styles.list}
-        renderItem={({ item }) => {
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.listContent,
+          {paddingBottom: insets.bottom + 32},
+        ]}
+        ListHeaderComponent={
+          progress.totalAnswered > 0 ? (
+            <View style={styles.statsRow}>
+              <StatBox label="Answered" value={String(progress.totalAnswered)} />
+              <View style={styles.statDivider} />
+              <StatBox label="Correct" value={String(progress.totalCorrect)} />
+              <View style={styles.statDivider} />
+              <StatBox label="Accuracy" value={`${accuracy}%`} accent />
+            </View>
+          ) : null
+        }
+        renderItem={({item}) => {
           const meta = EXAM_META[item];
           const count = getTotalQuestionCount(item);
           return (
             <Pressable
-              style={({ pressed }) => [
-                styles.card,
-                pressed && styles.cardPressed,
-              ]}
-              onPress={() =>
-                navigation.navigate('ExamList', { examType: item })
-              }
-            >
-              <View
-                style={[styles.cardAccent, { backgroundColor: meta.color }]}
-              />
+              style={({pressed}) => [styles.card, pressed && styles.cardPressed]}
+              onPress={() => navigation.navigate('ExamList', {examType: item})}>
+              <View style={[styles.cardIcon, {backgroundColor: meta.bg}]}>
+                <Text style={styles.cardEmoji}>{meta.icon}</Text>
+              </View>
               <View style={styles.cardBody}>
                 <Text style={styles.cardTitle}>{meta.label}</Text>
                 <Text style={styles.cardDesc}>{meta.description}</Text>
-                <Text style={styles.cardCount}>{count} questions</Text>
+              </View>
+              <View style={styles.cardRight}>
+                <Text style={[styles.cardCount, {color: meta.color}]}>
+                  {count}
+                </Text>
+                <Text style={styles.cardCountLabel}>questions</Text>
               </View>
               <Text style={styles.chevron}>›</Text>
             </Pressable>
           );
         }}
+        ListFooterComponent={
+          <View style={styles.settingsSection}>
+            <Text style={styles.sectionLabel}>SETTINGS</Text>
+            <View style={styles.settingsCard}>
+              <Pressable
+                style={({pressed}) => [
+                  styles.settingsRow,
+                  pressed && styles.cardPressed,
+                ]}
+                onPress={() => navigation.navigate('AppLock')}>
+                <View style={[styles.cardIcon, {backgroundColor: '#F3E8FF'}]}>
+                  <Text style={styles.cardEmoji}>🔒</Text>
+                </View>
+                <View style={styles.cardBody}>
+                  <Text style={styles.cardTitle}>App Lock</Text>
+                  <Text style={styles.cardDesc}>
+                    Lock any app behind a quiz question
+                  </Text>
+                </View>
+                <Text style={styles.chevron}>›</Text>
+              </Pressable>
+            </View>
+          </View>
+        }
       />
     </View>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function StatBox({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
   return (
-    <View style={styles.stat}>
-      <Text style={styles.statValue}>{value}</Text>
+    <View style={styles.statBox}>
+      <Text style={[styles.statValue, accent && styles.statValueAccent]}>
+        {value}
+      </Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
   );
@@ -106,103 +153,161 @@ function Stat({ label, value }: { label: string; value: string }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
-    paddingTop: 25,
+    backgroundColor: '#F5F5F7',
   },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 16,
+
+  // Hero
+  hero: {
+    backgroundColor: '#1E1B4B',
+    paddingHorizontal: 22,
+    paddingBottom: 24,
   },
-  title: {
-    fontSize: 28,
+  heroEyebrow: {
+    fontSize: 11,
     fontWeight: '700',
-    color: '#111827',
+    color: '#818CF8',
+    letterSpacing: 1.4,
+    marginBottom: 6,
+  },
+  heroTitle: {
+    fontSize: 34,
+    fontWeight: '800',
+    color: '#FFFFFF',
     letterSpacing: -0.5,
   },
-  subtitle: {
-    fontSize: 15,
-    color: '#6B7280',
+  heroSub: {
+    fontSize: 14,
+    color: '#A5B4FC',
     marginTop: 4,
   },
-  statsBar: {
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    marginBottom: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingVertical: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+
+  listContent: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
-  stat: {
+
+  // Stats
+  statsRow: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    marginBottom: 16,
+    paddingVertical: 16,
+    shadowColor: '#4F46E5',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  statBox: {
     flex: 1,
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 22,
+    fontWeight: '800',
     color: '#111827',
   },
+  statValueAccent: {
+    color: '#4F46E5',
+  },
   statLabel: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: 11,
+    color: '#9CA3AF',
     marginTop: 2,
+    fontWeight: '500',
   },
   statDivider: {
-    width: 1,
+    width: StyleSheet.hairlineWidth,
     backgroundColor: '#E5E7EB',
   },
-  list: {
-    paddingHorizontal: 20,
-    gap: 12,
-    paddingBottom: 32,
-  },
+
+  // Cards
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    overflow: 'hidden',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 14,
+    marginBottom: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.07,
-    shadowRadius: 6,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
     elevation: 2,
   },
   cardPressed: {
-    opacity: 0.85,
+    opacity: 0.8,
+    transform: [{scale: 0.98}],
   },
-  cardAccent: {
-    width: 5,
-    alignSelf: 'stretch',
+  cardIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  cardEmoji: {
+    fontSize: 24,
   },
   cardBody: {
     flex: 1,
-    paddingVertical: 18,
-    paddingHorizontal: 16,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
     color: '#111827',
   },
   cardDesc: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#6B7280',
     marginTop: 3,
+    lineHeight: 17,
+  },
+  cardRight: {
+    alignItems: 'center',
+    marginRight: 10,
   },
   cardCount: {
-    fontSize: 12,
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  cardCountLabel: {
+    fontSize: 10,
     color: '#9CA3AF',
-    marginTop: 6,
+    fontWeight: '500',
   },
   chevron: {
-    fontSize: 24,
+    fontSize: 22,
     color: '#D1D5DB',
-    paddingRight: 16,
+  },
+
+  // Settings section
+  settingsSection: {
+    marginTop: 8,
+  },
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#9CA3AF',
+    letterSpacing: 0.9,
+    marginBottom: 10,
+    marginLeft: 2,
+  },
+  settingsCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  settingsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 14,
   },
 });

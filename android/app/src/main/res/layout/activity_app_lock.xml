@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#1E1B4B">
+
+    <!-- Header: app icon + lock status -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="52dp"
+        android:paddingBottom="20dp">
+
+        <ImageView
+            android:id="@+id/iv_app_icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@mipmap/ic_launcher"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/tv_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textColor="#A5B4FC"
+            android:textSize="11sp"
+            android:letterSpacing="0.08"
+            android:text="APP IS LOCKED" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="Answer correctly to unlock" />
+    </LinearLayout>
+
+    <!-- Question card -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/lock_card_bg"
+            android:padding="20dp">
+
+            <!-- Exam type + subject tags -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="14dp">
+
+                <TextView
+                    android:id="@+id/tv_exam_tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/tag_indigo_bg"
+                    android:textColor="#4F46E5"
+                    android:textSize="11sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:text="SAT" />
+
+                <TextView
+                    android:id="@+id/tv_subject_tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:textColor="#6B7280"
+                    android:textSize="11sp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:text="Math" />
+            </LinearLayout>
+
+            <!-- Question text -->
+            <TextView
+                android:id="@+id/tv_question"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#111827"
+                android:textSize="15sp"
+                android:lineSpacingMultiplier="1.45"
+                android:layout_marginBottom="18dp"
+                android:text="Loading question..." />
+
+            <!-- Answer options (populated in code) -->
+            <LinearLayout
+                android:id="@+id/options_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <!-- Wrong-answer feedback -->
+            <TextView
+                android:id="@+id/tv_wrong_msg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#EF4444"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:layout_marginTop="12dp"
+                android:visibility="gone"
+                android:text="Incorrect — try again!" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Skip link (shown after 2 wrong answers) -->
+    <TextView
+        android:id="@+id/tv_skip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="#A5B4FC"
+        android:textSize="13sp"
+        android:paddingTop="12dp"
+        android:paddingBottom="24dp"
+        android:visibility="gone"
+        android:text="→  Get a different question" />
+
+</LinearLayout>
