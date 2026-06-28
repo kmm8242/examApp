@@ -31,13 +31,6 @@ const EXAM_META: Record<
     icon: '🔬',
     description: 'Biology · Chemistry · Physics · History · Math',
   },
-  Custom: {
-    label: 'Custom',
-    color: '#D97706',
-    bg: '#FFFBEB',
-    icon: '✏️',
-    description: 'Your own question sets',
-  },
 };
 
 export default function HomeScreen({navigation}: HomeScreenProps) {

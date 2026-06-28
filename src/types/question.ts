@@ -1,4 +1,4 @@
-export type ExamType = 'SAT' | 'GRE' | 'Academic' | 'Custom';
+export type ExamType = 'SAT' | 'GRE' | 'Academic';
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 

@@ -99,7 +99,8 @@ class AppLockModule(private val reactContext: ReactApplicationContext) :
             reactContext.contentResolver,
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
         ) ?: ""
-        val ourService = "${reactContext.packageName}/.AppLockService"
+        // Use the fully-qualified class name because applicationId may differ from namespace.
+        val ourService = "${reactContext.packageName}/${AppLockService::class.java.name}"
         val isEnabled = enabledServices.split(":").any {
             it.trim().equals(ourService, ignoreCase = true)
         }

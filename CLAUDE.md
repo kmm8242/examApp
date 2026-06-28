@@ -231,16 +231,41 @@ npm start
 # Run on Android (builds + installs + launches)
 npm run android
 
-# Build APK only
+# Build debug APK
 cd android && ./gradlew assembleDebug
 # Output: android/app/build/outputs/apk/debug/app-debug.apk
 
 # Install APK manually via adb
 export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
 adb install android/app/build/outputs/apk/debug/app-debug.apk
+
+# Build release APK (requires keystore — see below)
+cd android && ./gradlew assembleRelease
+# Output: android/app/build/outputs/apk/release/app-release.apk
 ```
 
-> **Important:** Any change to Kotlin files, `AndroidManifest.xml`, or new native modules requires a full `assembleDebug` rebuild + reinstall. Metro hot-reload only covers JS/TS changes.
+> **Important:** Any change to Kotlin files, `AndroidManifest.xml`, or new native modules requires a full rebuild + reinstall. Metro hot-reload only covers JS/TS changes.
+
+### Release Keystore Setup (one-time, before Play Store submission)
+
+```bash
+# 1. Generate keystore (keep this file safe — losing it means you can never update the app)
+keytool -genkeypair -v \
+  -keystore ~/my-upload-key.keystore \
+  -alias my-key-alias \
+  -keyalg RSA -keysize 2048 -validity 10000
+
+# 2. Add credentials to ~/.gradle/gradle.properties (NOT in the repo)
+echo "MYAPP_UPLOAD_STORE_FILE=$HOME/my-upload-key.keystore" >> ~/.gradle/gradle.properties
+echo "MYAPP_UPLOAD_KEY_ALIAS=my-key-alias" >> ~/.gradle/gradle.properties
+echo "MYAPP_UPLOAD_STORE_PASSWORD=yourpassword" >> ~/.gradle/gradle.properties
+echo "MYAPP_UPLOAD_KEY_PASSWORD=yourpassword" >> ~/.gradle/gradle.properties
+
+# 3. Build signed release APK
+cd android && ./gradlew assembleRelease
+```
+
+> The `build.gradle` release signing config reads from `~/.gradle/gradle.properties` automatically once these are set.
 
 ---
 

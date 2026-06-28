@@ -8,6 +8,7 @@ import ExamListScreen from './src/screens/ExamListScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import AppLockScreen from './src/screens/AppLockScreen';
 import {ProgressProvider} from './src/store/ProgressContext';
+import {ErrorBoundary} from './src/components/ErrorBoundary';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -15,6 +16,7 @@ export default function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
+    <ErrorBoundary>
     <SafeAreaProvider>
       <ProgressProvider>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
@@ -53,5 +55,6 @@ export default function App() {
         </NavigationContainer>
       </ProgressProvider>
     </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
