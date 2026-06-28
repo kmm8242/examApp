@@ -16,6 +16,15 @@ class AppLockModule(private val reactContext: ReactApplicationContext) :
 
     override fun getName() = "AppLockModule"
 
+    companion object {
+        // Android package names: dot-separated segments of [a-zA-Z][a-zA-Z0-9_]*
+        private val PACKAGE_REGEX = Regex("""^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$""")
+        // Topic keys are stored as "ExamType|Subject", e.g. "SAT|Math"
+        private val TOPIC_KEY_REGEX = Regex("""^[A-Za-z ]{1,40}\|[A-Za-z &]{1,40}$""")
+        private const val MAX_LOCKED_APPS = 200
+        private const val MAX_SUBJECTS = 50
+    }
+
     @ReactMethod
     fun getInstalledApps(promise: Promise) {
         try {
@@ -52,8 +61,15 @@ class AppLockModule(private val reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun setLockedApps(packages: ReadableArray, promise: Promise) {
-        val set = (0 until packages.size()).mapNotNull { packages.getString(it) }.toSet()
-        LockedAppsManager.setLockedApps(reactContext, set)
+        if (packages.size() > MAX_LOCKED_APPS) {
+            promise.reject("ERR_TOO_MANY", "Cannot lock more than $MAX_LOCKED_APPS apps")
+            return
+        }
+        val validated = (0 until packages.size())
+            .mapNotNull { packages.getString(it) }
+            .filter { PACKAGE_REGEX.matches(it) }
+            .toSet()
+        LockedAppsManager.setLockedApps(reactContext, validated)
         promise.resolve(null)
     }
 
@@ -66,8 +82,14 @@ class AppLockModule(private val reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun setSelectedSubjects(subjects: ReadableArray, promise: Promise) {
-        val list = (0 until subjects.size()).mapNotNull { subjects.getString(it) }
-        LockedAppsManager.setSelectedSubjects(reactContext, list)
+        if (subjects.size() > MAX_SUBJECTS) {
+            promise.reject("ERR_TOO_MANY", "Cannot select more than $MAX_SUBJECTS subjects")
+            return
+        }
+        val validated = (0 until subjects.size())
+            .mapNotNull { subjects.getString(it) }
+            .filter { TOPIC_KEY_REGEX.matches(it) }
+        LockedAppsManager.setSelectedSubjects(reactContext, validated)
         promise.resolve(null)
     }
 

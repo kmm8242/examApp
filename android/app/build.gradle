@@ -105,8 +105,15 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
+            // ⚠️ SECURITY: release build currently uses the debug keystore.
+            // Before publishing, generate a proper release keystore and store credentials
+            // in ~/.gradle/gradle.properties (NEVER commit them to source control):
+            //   MYAPP_RELEASE_STORE_FILE=my-release-key.keystore
+            //   MYAPP_RELEASE_KEY_ALIAS=my-key-alias
+            //   MYAPP_RELEASE_STORE_PASSWORD=...
+            //   MYAPP_RELEASE_KEY_PASSWORD=...
+            // Then replace signingConfig below with signingConfigs.release.
+            // See: https://reactnative.dev/docs/signed-apk-android
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"

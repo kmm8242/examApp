@@ -7,8 +7,7 @@ object LockedAppsManager {
     private const val PREFS = "com.examapp.applock_prefs"
     private const val KEY_LOCKED = "locked_packages"
     private const val KEY_SUBJECTS = "selected_subjects"
-
-    private val recentlyUnlocked = mutableMapOf<String, Long>()
+    private const val KEY_GRACE_PREFIX = "grace_"
     private const val GRACE_MS = 30_000L
 
     fun getLockedApps(ctx: Context): Set<String> =
@@ -36,13 +35,16 @@ object LockedAppsManager {
             .edit().putString(KEY_SUBJECTS, JSONArray(subjects).toString()).apply()
     }
 
-    // In-memory grace period so re-entering the same app within 30s doesn't re-lock
-    fun markUnlocked(pkg: String) {
-        recentlyUnlocked[pkg] = System.currentTimeMillis()
+    // Grace period is persisted to SharedPreferences so it survives process restarts.
+    // This prevents the bypass: unlock → force-kill service → reopen app within 30 s.
+    fun markUnlocked(pkg: String, ctx: Context) {
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit().putLong("$KEY_GRACE_PREFIX$pkg", System.currentTimeMillis()).apply()
     }
 
-    fun isRecentlyUnlocked(pkg: String): Boolean {
-        val t = recentlyUnlocked[pkg] ?: return false
+    fun isRecentlyUnlocked(pkg: String, ctx: Context): Boolean {
+        val t = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getLong("$KEY_GRACE_PREFIX$pkg", 0L)
         return System.currentTimeMillis() - t < GRACE_MS
     }
 }

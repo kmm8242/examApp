@@ -1,8 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Needed to enumerate all installed apps for the lock list -->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 
     <!-- Android 11+ package visibility: allow querying apps with a launcher icon -->
     <queries>
@@ -34,7 +32,10 @@
         </intent-filter>
       </activity>
 
-      <!-- App Lock: accessibility service monitors foreground app changes -->
+      <!-- App Lock: accessibility service monitors foreground app changes.
+           exported="true" is required by the framework to discover accessibility services.
+           android:permission restricts binding to the system only — no third-party app
+           can bind to this service directly. -->
       <service
         android:name=".AppLockService"
         android:exported="true"

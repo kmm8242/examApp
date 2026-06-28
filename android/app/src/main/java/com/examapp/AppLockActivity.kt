@@ -9,7 +9,6 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -22,6 +21,7 @@ class AppLockActivity : AppCompatActivity() {
 
     private var targetPackage = ""
     private var wrongCount = 0
+    private var isUnlocked = false
     private val handler = Handler(Looper.getMainLooper())
 
     private lateinit var ivAppIcon: ImageView
@@ -36,7 +36,10 @@ class AppLockActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Show over lock screen so the overlay appears even if device was sleeping
+        // FLAG_SECURE: blocks screenshots, screen recording, and the Recent Tasks thumbnail
+        // so correct answers cannot be captured or previewed outside this activity.
+        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+
         @Suppress("DEPRECATION")
         window.addFlags(
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
@@ -58,7 +61,18 @@ class AppLockActivity : AppCompatActivity() {
         tvWrongMsg = findViewById(R.id.tv_wrong_msg)
         tvSkip = findViewById(R.id.tv_skip)
 
-        targetPackage = intent.getStringExtra(EXTRA_PACKAGE) ?: ""
+        // Validate the package: only accept packages that have a real launcher intent
+        // to prevent intent-injection attacks from arbitrary senders.
+        val requested = intent.getStringExtra(EXTRA_PACKAGE) ?: ""
+        targetPackage = requested.takeIf { pkg ->
+            pkg.isNotEmpty() && packageManager.getLaunchIntentForPackage(pkg) != null
+        } ?: ""
+
+        if (targetPackage.isEmpty()) {
+            finish()
+            return
+        }
+
         updateAppHeader()
         tvSkip.setOnClickListener { loadQuestion() }
         loadQuestion()
@@ -66,18 +80,35 @@ class AppLockActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        val newPkg = intent.getStringExtra(EXTRA_PACKAGE) ?: return
-        if (newPkg != targetPackage) {
-            targetPackage = newPkg
+        val requested = intent.getStringExtra(EXTRA_PACKAGE) ?: return
+        val validated = requested.takeIf { pkg ->
+            pkg.isNotEmpty() && packageManager.getLaunchIntentForPackage(pkg) != null
+        } ?: return
+
+        if (validated != targetPackage) {
+            targetPackage = validated
             wrongCount = 0
+            isUnlocked = false
             updateAppHeader()
+            loadQuestion()
+        }
+    }
+
+    // When focus returns to this activity (e.g. user dismissed a split-screen pane or
+    // a system dialog), load a fresh question so the user cannot peek at the question
+    // in one context and look up the answer before returning.
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus && !isUnlocked) {
+            handler.removeCallbacksAndMessages(null)
+            wrongCount = 0
             loadQuestion()
         }
     }
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        // Back is blocked — user must answer to unlock
+        // Back is intentionally blocked — the user must answer to proceed.
     }
 
     private fun updateAppHeader() {
@@ -135,7 +166,6 @@ class AppLockActivity : AppCompatActivity() {
     }
 
     private fun handleAnswer(selected: WidgetOption, question: WidgetQuestion, selectedView: View) {
-        // Disable all options immediately
         for (i in 0 until optionsContainer.childCount) {
             optionsContainer.getChildAt(i).isClickable = false
         }
@@ -149,7 +179,6 @@ class AppLockActivity : AppCompatActivity() {
             selectedView.background = ContextCompat.getDrawable(this, R.drawable.lock_opt_wrong)
             (selectedView as TextView).setTextColor(0xFF7F1D1D.toInt())
 
-            // Reveal correct answer
             for (i in 0 until optionsContainer.childCount) {
                 val child = optionsContainer.getChildAt(i)
                 if (child.tag == question.correctOptionId) {
@@ -167,8 +196,8 @@ class AppLockActivity : AppCompatActivity() {
     }
 
     private fun unlockApp() {
-        LockedAppsManager.markUnlocked(targetPackage)
-        // Finishing brings the locked app (which is behind us in the task stack) back to foreground
+        isUnlocked = true
+        LockedAppsManager.markUnlocked(targetPackage, applicationContext)
         finish()
     }
 
