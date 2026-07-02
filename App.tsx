@@ -7,6 +7,8 @@ import HomeScreen from './src/screens/HomeScreen';
 import ExamListScreen from './src/screens/ExamListScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import AppLockScreen from './src/screens/AppLockScreen';
+import StatsScreen from './src/screens/StatsScreen';
+import QuestionReviewScreen from './src/screens/QuestionReviewScreen';
 import {ProgressProvider} from './src/store/ProgressContext';
 import {ErrorBoundary} from './src/components/ErrorBoundary';
 
@@ -50,6 +52,16 @@ export default function App() {
               name="AppLock"
               component={AppLockScreen}
               options={{title: 'App Lock'}}
+            />
+            <Stack.Screen
+              name="Stats"
+              component={StatsScreen}
+              options={{title: 'Stats & History'}}
+            />
+            <Stack.Screen
+              name="QuestionReview"
+              component={QuestionReviewScreen}
+              options={{title: 'Question Review'}}
             />
           </Stack.Navigator>
         </NavigationContainer>

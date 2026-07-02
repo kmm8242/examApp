@@ -36,7 +36,11 @@ examApp/
 │   │   ├── HomeScreen.tsx           # Dashboard — exam cards + Settings section
 │   │   ├── ExamListScreen.tsx       # Subject list within an exam type
 │   │   ├── QuizScreen.tsx           # Question answering (MCQ)
+│   │   ├── StatsScreen.tsx          # Overall / per-exam stats + recent activity
+│   │   ├── QuestionReviewScreen.tsx # Single-question review (answer, explanation, history, re-practice)
 │   │   └── AppLockScreen.tsx        # App Lock settings UI
+│   ├── components/
+│   │   └── ErrorBoundary.tsx        # Root error boundary with retry UI
 │   ├── native/
 │   │   └── AppLockModule.ts         # TS wrapper for Android AppLockModule bridge
 │   ├── store/
@@ -51,7 +55,10 @@ examApp/
 │   │       └── academic.json        # Academic questions
 │   └── types/
 │       └── question.ts              # Question, ExamType, QuestionAttempt types
-└── android/app/src/main/
+└── android/app/src/
+    ├── debug/AndroidManifest.xml    # Debug-only: usesCleartextTraffic=true for Metro
+    ├── release/AndroidManifest.xml  # Release-only: strips INTERNET permission (offline app)
+    └── main/
     ├── AndroidManifest.xml
     ├── java/com/examapp/
     │   ├── MainActivity.kt
@@ -74,9 +81,13 @@ examApp/
         ├── xml/
         │   ├── widget_info.xml               # Widget metadata
         │   └── accessibility_service_config.xml # AccessibilityService config
+        ├── mipmap-anydpi-v26/        # Adaptive launcher icon (+ monochrome for Android 13 themed icons)
+        ├── mipmap-*dpi/              # Legacy launcher PNGs (branded graduation-cap icon)
         └── values/
-            └── strings.xml           # app_name, widget_description, accessibility_service_desc
+            └── strings.xml           # app_name ("ExamApp"), widget_description, accessibility_service_desc
 ```
+
+**Launcher icon:** graduation cap on an indigo (`#4F46E5`→`#1E1B4B`) gradient. Adaptive icon = `drawable/ic_launcher_background.xml` + `drawable/ic_launcher_foreground.xml` (vectors); legacy PNGs in `mipmap-*dpi`. Editable SVG sources + the 512×512 Play Store listing icon live in `store-assets/`. iOS uses a single 1024×1024 no-alpha icon in `Images.xcassets/AppIcon.appiconset`.
 
 ---
 
@@ -84,10 +95,12 @@ examApp/
 
 ```
 RootStack (native-stack)
-├── Home          → HomeScreen       (headerShown: false)
-├── ExamList      → ExamListScreen   (params: { examType: ExamType })
-├── Quiz          → QuizScreen       (params: { examType?, subject? })
-└── AppLock       → AppLockScreen    (title: "App Lock")
+├── Home           → HomeScreen           (headerShown: false)
+├── ExamList       → ExamListScreen       (params: { examType: ExamType })
+├── Quiz           → QuizScreen           (params: { examType?, subject? })
+├── AppLock        → AppLockScreen        (title: "App Lock")
+├── Stats          → StatsScreen          (title: "Stats & History")
+└── QuestionReview → QuestionReviewScreen (params: { questionId: string })
 ```
 
 `types.ts` exports `RootStackParamList` plus typed props for each screen.
@@ -146,7 +159,7 @@ Fully native, no React Native involvement at runtime.
 
 | File | Role |
 |---|---|
-| `QuestionWidgetProvider.kt` | AppWidgetProvider; handles `WIDGET_NEXT` / `WIDGET_ANSWER` broadcasts |
+| `QuestionWidgetProvider.kt` | AppWidgetProvider; handles `WIDGET_NEXT` / `WIDGET_ANSWER` broadcasts (delivered via explicit PendingIntents only — deliberately **not** in the manifest intent-filter so other apps cannot trigger them implicitly) |
 | `WidgetQuestion.kt` | Data class with `toJson()` / `fromJson()` |
 | `QuestionRepository.kt` | Loads all question JSON from assets; `getRandom(ctx)`, `getRandomForSubjects(ctx, subjects)` |
 | `widget_question.xml` | 4×3 widget layout (subject tag, question text, 4 option buttons) |
@@ -174,18 +187,20 @@ Widget state stored in `SharedPreferences("com.examapp.widget_prefs")`.
 |---|---|
 | `AppLockService` | AccessibilityService; reads locked list, launches overlay |
 | `AppLockActivity` | Native Activity (extends AppCompatActivity); shows question UI, blocks back button |
-| `LockedAppsManager` | SharedPrefs singleton — locked packages (`Set<String>`), selected subjects (`JSON array`), in-memory grace-period map |
-| `QuestionRepository.getRandomForSubjects(ctx, subjects)` | Filters by `"ExamType\|Subject"` keys; falls back to all questions if pool is empty |
-| `AppLockModule` | RN NativeModule — `getInstalledApps`, `getLockedApps`, `setLockedApps`, `getSelectedSubjects`, `setSelectedSubjects`, `isAccessibilityServiceEnabled`, `openAccessibilitySettings` |
+| `LockedAppsManager` | `EncryptedSharedPreferences` singleton — locked packages, selected subjects (JSON arrays), persisted grace-period timestamps |
+| `QuestionRepository.getRandomForSubjects(ctx, subjects)` | Filters by `"ExamType\|Subject"` keys; skips already-answered IDs; falls back to all questions if pool is empty |
+| `AppLockModule` | RN NativeModule — `getInstalledApps`, `getLockedApps`, `setLockedApps`, `getSelectedSubjects`, `setSelectedSubjects`, `isAccessibilityServiceEnabled`, `openAccessibilitySettings`, `saveProgress`, `loadProgress`, `syncAnsweredQuestions` |
 | `AppLockPackage` | ReactPackage registered in `MainApplication` |
 
 ### Topic key format
 Topics are stored as `"ExamType|Subject"` (e.g., `"SAT|Math"`, `"Academic|Math"`). This keeps SAT Math and Academic Math distinct in both storage and filtering.
 
-### SharedPreferences keys (`com.examapp.applock_prefs`)
-- `locked_packages` — `Set<String>` of package names
+### SharedPreferences keys (`com.examapp.applock_prefs_v2`, AES-256 encrypted via `EncryptedSharedPreferences`)
+- `locked_packages` — JSON array string of package names
 - `selected_subjects` — JSON array string of `"ExamType|Subject"` keys
 - `grace_<pkg>` — `Long` timestamp of when an app was last unlocked (grace period persisted across process restarts)
+
+Plain (non-sensitive) prefs files: `examapp_progress` (progress JSON, shared between RN and `AppLockActivity`), `applock_answered_ids` (answered-question IDs for question dedup), `com.examapp.widget_prefs` (widget state).
 
 ### Permissions (AndroidManifest.xml)
 ```xml
@@ -261,11 +276,22 @@ echo "MYAPP_UPLOAD_KEY_ALIAS=my-key-alias" >> ~/.gradle/gradle.properties
 echo "MYAPP_UPLOAD_STORE_PASSWORD=yourpassword" >> ~/.gradle/gradle.properties
 echo "MYAPP_UPLOAD_KEY_PASSWORD=yourpassword" >> ~/.gradle/gradle.properties
 
-# 3. Build signed release APK
+# 3. Build the Play Store artifact (AAB — required for new Play submissions)
+cd android && ./gradlew bundleRelease
+# Output: android/app/build/outputs/bundle/release/app-release.aab
+
+# Or a signed APK for direct install / testing:
 cd android && ./gradlew assembleRelease
 ```
 
 > The `build.gradle` release signing config reads from `~/.gradle/gradle.properties` automatically once these are set.
+> **Release builds fail fast** with a clear error if the keystore properties are missing — there is deliberately no fallback to the debug keystore.
+
+### Play Store submission notes
+- Play Console requires an **.aab** (`bundleRelease`), not an APK, for new apps.
+- The app uses an **AccessibilityService**, so the Play Console "App content → Accessibility" declaration form must be completed, explaining the app-lock use case. The in-app disclosure string is `accessibility_service_desc` in `strings.xml`.
+- Release builds request **zero permissions** (INTERNET is stripped via `src/release/AndroidManifest.xml`) — keep it that way unless a backend/crash reporter is added.
+- Bump `versionCode` in `android/app/build.gradle` on every upload.
 
 ---
 
@@ -289,13 +315,18 @@ cd android && ./gradlew assembleRelease
 | System dialogs / keyboards trigger lock | `AppLockService` skips `SYSTEM_SKIP` packages and Dialog/PopupWindow class names |
 | Multi-window / split-screen peek | `AppLockActivity.onWindowFocusChanged` loads a fresh question when focus returns |
 | `QUERY_ALL_PACKAGES` over-broad | Removed; `<queries>` intent filter is sufficient |
+| Release build silently used debug keystore | Fallback removed; `assembleRelease`/`bundleRelease`/`installRelease` **fail fast** with setup instructions unless `MYAPP_UPLOAD_*` properties are configured |
+| SharedPreferences not encrypted | `LockedAppsManager` migrated to `EncryptedSharedPreferences` (AES-256-GCM via Android Keystore), file `com.examapp.applock_prefs_v2`; falls back to plain prefs only on emulators without a keystore |
+| Undefined `${usesCleartextTraffic}` manifest placeholder broke release builds | Removed; cleartext is debug-only via `src/debug/AndroidManifest.xml` (Metro), release uses platform default (blocked) |
+| INTERNET permission in a fully offline app | Stripped from release builds via `src/release/AndroidManifest.xml` (`tools:node="remove"`); release APK requests zero permissions |
+| Widget custom actions externally triggerable | `WIDGET_NEXT`/`WIDGET_ANSWER` removed from the manifest intent-filter; only our explicit PendingIntents deliver them |
+| Vulnerable `fast-xml-parser` in build toolchain | `@react-native-community/cli*` bumped to 20.2.0; `npm audit` reports 0 vulnerabilities (build-time only, never shipped in APK) |
+| Tink R8 failure (`KeysDownloader` optional deps) | `-dontwarn` rules for `com.google.api.client.http.**` / `org.joda.time.Instant` in `proguard-rules.pro` |
 
 ### Known remaining risks (inherent / require major arch change)
 | Risk | Status |
 |---|---|
 | Correct answers visible in APK assets | By design for offline app; fix requires a backend server that validates answers and never sends `correctOptionId` to the client |
-| Release build uses debug keystore | **MUST FIX before publishing** — see warning comment in `android/app/build.gradle` and https://reactnative.dev/docs/signed-apk-android |
-| SharedPreferences not encrypted | Plain `MODE_PRIVATE`; on rooted devices the lock list can be read/cleared. Fix: migrate to `EncryptedSharedPreferences` (requires `androidx.security:security-crypto` dep) |
 | ADB bypass | `adb shell am start -n <pkg>` bypasses the service; inherent to Android sideloading |
 | Safe-mode bypass | Android safe mode disables third-party accessibility services; inherent |
 | App Lock settings unprotected by PIN | Anyone with phone access can remove locks; fix requires a PIN screen before `AppLockScreen` |

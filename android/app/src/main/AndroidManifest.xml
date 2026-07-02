@@ -17,7 +17,6 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
-      android:usesCleartextTraffic="${usesCleartextTraffic}"
       android:supportsRtl="true">
       <activity
         android:name=".MainActivity"
@@ -54,16 +53,17 @@
         android:excludeFromRecents="true"
         android:exported="false"
         android:launchMode="singleTask"
-        android:showOnLockScreen="true"
+        android:showWhenLocked="true"
         android:theme="@style/AppTheme" />
 
+      <!-- WIDGET_NEXT / WIDGET_ANSWER are deliberately NOT in the intent-filter:
+           our PendingIntents target this class explicitly so they are still
+           delivered, but other apps can no longer trigger them implicitly. -->
       <receiver
         android:name=".QuestionWidgetProvider"
         android:exported="true">
         <intent-filter>
           <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-          <action android:name="com.examapp.WIDGET_NEXT" />
-          <action android:name="com.examapp.WIDGET_ANSWER" />
         </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"

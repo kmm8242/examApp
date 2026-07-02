@@ -1,5 +1,6 @@
 package com.examapp
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.provider.Settings
@@ -113,6 +114,34 @@ class AppLockModule(private val reactContext: ReactApplicationContext) :
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         reactContext.startActivity(intent)
+        promise.resolve(null)
+    }
+
+    // Persist the full progress JSON (written by ProgressContext on every state change).
+    @ReactMethod
+    fun saveProgress(json: String, promise: Promise) {
+        reactContext
+            .getSharedPreferences("examapp_progress", Context.MODE_PRIVATE)
+            .edit().putString("data", json).apply()
+        promise.resolve(null)
+    }
+
+    // Returns the stored progress JSON string, or null if never saved.
+    @ReactMethod
+    fun loadProgress(promise: Promise) {
+        val json = reactContext
+            .getSharedPreferences("examapp_progress", Context.MODE_PRIVATE)
+            .getString("data", null)
+        promise.resolve(json)
+    }
+
+    // Called by ProgressContext after hydration so AppLock skips already-answered questions.
+    @ReactMethod
+    fun syncAnsweredQuestions(ids: ReadableArray, promise: Promise) {
+        val idSet = (0 until ids.size()).mapNotNull { ids.getString(it) }.toSet()
+        reactContext
+            .getSharedPreferences("applock_answered_ids", Context.MODE_PRIVATE)
+            .edit().putStringSet("ids", idSet).apply()
         promise.resolve(null)
     }
 }

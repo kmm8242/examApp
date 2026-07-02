@@ -222,7 +222,8 @@ export default function AppLockScreen() {
                         <Text
                           style={[
                             styles.chipText,
-                            sel && {color, fontWeight: '600'},
+                            sel && styles.chipTextSelected,
+                            sel && {color},
                           ]}>
                           {subject}
                         </Text>
@@ -491,6 +492,9 @@ const styles = StyleSheet.create({
   chipText: {
     fontSize: 13,
     color: '#374151',
+  },
+  chipTextSelected: {
+    fontWeight: '600',
   },
 
   // Apps header

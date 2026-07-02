@@ -28,6 +28,10 @@
 # AndroidX Security (EncryptedSharedPreferences + Tink)
 -keep class androidx.security.crypto.** { *; }
 -keep class com.google.crypto.tink.** { *; }
+# Tink's optional KeysDownloader references google-http-client and joda-time,
+# which are not dependencies. EncryptedSharedPreferences never uses that path.
+-dontwarn com.google.api.client.http.**
+-dontwarn org.joda.time.Instant
 
 # org.json is used for question parsing in QuestionRepository
 -keep class org.json.** { *; }

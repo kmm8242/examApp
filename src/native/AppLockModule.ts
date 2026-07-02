@@ -16,6 +16,9 @@ const stub = {
   setSelectedSubjects: async (_subjects: string[]): Promise<void> => {},
   isAccessibilityServiceEnabled: async (): Promise<boolean> => false,
   openAccessibilitySettings: async (): Promise<void> => {},
+  syncAnsweredQuestions: async (_ids: string[]): Promise<void> => {},
+  saveProgress: async (_json: string): Promise<void> => {},
+  loadProgress: async (): Promise<string | null> => null,
 };
 
 const AppLockModule =
@@ -23,7 +26,8 @@ const AppLockModule =
     ? {
         getInstalledApps: (): Promise<InstalledApp[]> =>
           native.getInstalledApps(),
-        getLockedApps: (): Promise<string[]> => native.getLockedApps(),
+        getLockedApps: (): Promise<string[]> =>
+          native.getLockedApps(),
         setLockedApps: (packages: string[]): Promise<void> =>
           native.setLockedApps(packages),
         getSelectedSubjects: (): Promise<string[]> =>
@@ -34,6 +38,12 @@ const AppLockModule =
           native.isAccessibilityServiceEnabled(),
         openAccessibilitySettings: (): Promise<void> =>
           native.openAccessibilitySettings(),
+        syncAnsweredQuestions: (ids: string[]): Promise<void> =>
+          native.syncAnsweredQuestions(ids),
+        saveProgress: (json: string): Promise<void> =>
+          native.saveProgress?.(json) ?? Promise.resolve(),
+        loadProgress: (): Promise<string | null> =>
+          native.loadProgress?.() ?? Promise.resolve(null),
       }
     : stub;
 

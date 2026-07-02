@@ -15,53 +15,71 @@ type AnswerState = 'unanswered' | 'correct' | 'incorrect';
 
 export default function QuizScreen({route, navigation}: QuizScreenProps) {
   const {examType, subject} = route.params;
-  const {recordAttempt} = useProgress();
+  const {progress, isLoaded, recordAttempt} = useProgress();
 
   const [question, setQuestion] = useState<Question | undefined>(undefined);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [answerState, setAnswerState] = useState<AnswerState>('unanswered');
   const [sessionCorrect, setSessionCorrect] = useState(0);
   const [sessionTotal, setSessionTotal] = useState(0);
+  // Excludes both cross-session answered questions and in-session seen questions
   const [usedIds, setUsedIds] = useState<string[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [allExhausted, setAllExhausted] = useState(false);
+
+  // Pick the first question once persisted progress has loaded from storage.
+  // Seeds usedIds with all previously answered question IDs so they are skipped.
+  useEffect(() => {
+    if (!isLoaded || isInitialized) return;
+
+    const answeredIds = Object.keys(progress.byQuestion);
+    const next = getRandomQuestion({examType, subject, excludeIds: answeredIds});
+
+    if (next) {
+      setQuestion(next);
+      setUsedIds([...answeredIds, next.id]);
+    } else {
+      // Every question in this set has been answered before — start fresh
+      setAllExhausted(true);
+      const fresh = getRandomQuestion({examType, subject});
+      if (fresh) {
+        setQuestion(fresh);
+        setUsedIds([fresh.id]);
+      }
+    }
+
+    setIsInitialized(true);
+  // isInitialized prevents re-running; progress.byQuestion listed for completeness
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded]);
 
   const loadNext = useCallback(() => {
     const next = getRandomQuestion({examType, subject, excludeIds: usedIds});
+    setSelectedId(null);
+    setAnswerState('unanswered');
+
     if (next) {
       setQuestion(next);
-      setSelectedId(null);
-      setAnswerState('unanswered');
       setUsedIds(prev => [...prev, next.id]);
     } else {
-      // All questions in this set exhausted — restart
-      setUsedIds([]);
-      const restarted = getRandomQuestion({examType, subject});
-      if (restarted) {
-        setQuestion(restarted);
-        setSelectedId(null);
-        setAnswerState('unanswered');
-        setUsedIds([restarted.id]);
+      // All new questions exhausted mid-session — loop back through all of them
+      setAllExhausted(true);
+      const fallback = getRandomQuestion({examType, subject});
+      if (fallback) {
+        setQuestion(fallback);
+        setUsedIds([fallback.id]);
       }
     }
   }, [examType, subject, usedIds]);
 
-  useEffect(() => {
-    loadNext();
-    // Only on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handleSelect = useCallback(
     (optionId: string) => {
-      if (answerState !== 'unanswered' || !question) {
-        return;
-      }
+      if (answerState !== 'unanswered' || !question) return;
       const isCorrect = optionId === question.correctOptionId;
       setSelectedId(optionId);
       setAnswerState(isCorrect ? 'correct' : 'incorrect');
       setSessionTotal(t => t + 1);
-      if (isCorrect) {
-        setSessionCorrect(c => c + 1);
-      }
+      if (isCorrect) setSessionCorrect(c => c + 1);
       recordAttempt({
         questionId: question.id,
         selectedOptionId: optionId,
@@ -73,9 +91,18 @@ export default function QuizScreen({route, navigation}: QuizScreenProps) {
   );
 
   const difficultyColor = useMemo(() => {
-    if (!question) {return '#9CA3AF';}
+    if (!question) return '#9CA3AF';
     return {easy: '#059669', medium: '#D97706', hard: '#DC2626'}[question.difficulty];
   }, [question]);
+
+  // Loading — waiting for AsyncStorage to hydrate progress
+  if (!isInitialized) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.emptyText}>Loading questions…</Text>
+      </View>
+    );
+  }
 
   if (!question) {
     return (
@@ -95,10 +122,17 @@ export default function QuizScreen({route, navigation}: QuizScreenProps) {
         <Text style={styles.sessionScore}>
           {sessionCorrect}/{sessionTotal} this session
         </Text>
-        <View style={[styles.difficultyBadge, {backgroundColor: difficultyColor + '22'}]}>
-          <Text style={[styles.difficultyText, {color: difficultyColor}]}>
-            {question.difficulty}
-          </Text>
+        <View style={styles.topBarRight}>
+          {allExhausted && (
+            <View style={styles.exhaustedBadge}>
+              <Text style={styles.exhaustedText}>All done! Repeating</Text>
+            </View>
+          )}
+          <View style={[styles.difficultyBadge, {backgroundColor: difficultyColor + '22'}]}>
+            <Text style={[styles.difficultyText, {color: difficultyColor}]}>
+              {question.difficulty}
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -141,8 +175,7 @@ export default function QuizScreen({route, navigation}: QuizScreenProps) {
                 <Text
                   style={[
                     styles.optionText,
-                    (isSelected || (revealed && isCorrect)) &&
-                      styles.optionTextSelected,
+                    (isSelected || (revealed && isCorrect)) && styles.optionTextSelected,
                   ]}
                   numberOfLines={3}>
                   {option.text}
@@ -205,6 +238,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E5E7EB',
   },
+  topBarRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   sessionScore: {
     fontSize: 14,
     fontWeight: '600',
@@ -219,6 +257,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     textTransform: 'capitalize',
+  },
+  exhaustedBadge: {
+    backgroundColor: '#FEF9C3',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  exhaustedText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#854D0E',
   },
   scroll: {
     padding: 20,

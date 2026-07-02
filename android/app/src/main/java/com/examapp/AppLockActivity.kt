@@ -1,5 +1,6 @@
 package com.examapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import org.json.JSONObject
 
 class AppLockActivity : AppCompatActivity() {
 
@@ -170,7 +172,10 @@ class AppLockActivity : AppCompatActivity() {
             optionsContainer.getChildAt(i).isClickable = false
         }
 
-        if (selected.id == question.correctOptionId) {
+        val isCorrect = selected.id == question.correctOptionId
+        updateProgress(question.id, selected.id, isCorrect)
+
+        if (isCorrect) {
             selectedView.background = ContextCompat.getDrawable(this, R.drawable.lock_opt_correct)
             (selectedView as TextView).setTextColor(0xFF065F46.toInt())
             handler.postDelayed({ unlockApp() }, 600)
@@ -193,6 +198,54 @@ class AppLockActivity : AppCompatActivity() {
 
             handler.postDelayed({ loadQuestion() }, 2000)
         }
+    }
+
+    // Writes directly into examapp_progress (the same SharedPreferences file that
+    // ProgressContext.saveProgress uses). SharedPreferences in-memory cache is
+    // synchronously updated by saveProgress's apply(), so any quiz answers written
+    // moments before this runs are visible here within the same process.
+    // commit() (not apply()) guarantees the data is on disk before AppLockActivity
+    // finishes, so a subsequent loadProgress call from ProgressContext sees it even
+    // after a process restart.
+    private fun updateProgress(questionId: String, selectedOptionId: String, isCorrect: Boolean) {
+        val prefs = applicationContext.getSharedPreferences("examapp_progress", Context.MODE_PRIVATE)
+        val existing = prefs.getString("data", null)
+        val progress = if (existing != null) {
+            try { JSONObject(existing) } catch (_: Exception) { emptyProgress() }
+        } else {
+            emptyProgress()
+        }
+
+        progress.put("totalAnswered", progress.optInt("totalAnswered", 0) + 1)
+        if (isCorrect) progress.put("totalCorrect", progress.optInt("totalCorrect", 0) + 1)
+
+        val byQuestion = progress.optJSONObject("byQuestion") ?: JSONObject().also {
+            progress.put("byQuestion", it)
+        }
+        val qp = byQuestion.optJSONObject(questionId) ?: JSONObject().apply {
+            put("questionId", questionId)
+            put("totalAttempts", 0)
+            put("correctAttempts", 0)
+            put("lastAttemptedAt", "")
+        }
+        qp.put("totalAttempts", qp.optInt("totalAttempts", 0) + 1)
+        if (isCorrect) qp.put("correctAttempts", qp.optInt("correctAttempts", 0) + 1)
+        qp.put("lastAttemptedAt", isoNow())
+        byQuestion.put(questionId, qp)
+
+        prefs.edit().putString("data", progress.toString()).commit()
+    }
+
+    private fun emptyProgress() = JSONObject().apply {
+        put("byQuestion", JSONObject())
+        put("totalAnswered", 0)
+        put("totalCorrect", 0)
+    }
+
+    private fun isoNow(): String {
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US)
+        sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+        return sdf.format(java.util.Date())
     }
 
     private fun unlockApp() {

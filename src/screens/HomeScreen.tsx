@@ -1,5 +1,12 @@
-import React from 'react';
-import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import type {ExamType} from '../types/question';
 import {getAvailableExamTypes, getTotalQuestionCount} from '../data/questionLoader';
@@ -35,8 +42,21 @@ const EXAM_META: Record<
 
 export default function HomeScreen({navigation}: HomeScreenProps) {
   const insets = useSafeAreaInsets();
-  const {progress} = useProgress();
+  const {progress, isLoaded} = useProgress();
+  const [query, setQuery] = useState('');
+
   const examTypes = getAvailableExamTypes();
+
+  const filteredExams = query.trim()
+    ? examTypes.filter(type => {
+        const q = query.toLowerCase();
+        const meta = EXAM_META[type];
+        return (
+          meta.label.toLowerCase().includes(q) ||
+          meta.description.toLowerCase().includes(q)
+        );
+      })
+    : examTypes;
 
   const accuracy =
     progress.totalAnswered > 0
@@ -45,7 +65,6 @@ export default function HomeScreen({navigation}: HomeScreenProps) {
 
   return (
     <View style={styles.container}>
-      {/* Dark hero header */}
       <View style={[styles.hero, {paddingTop: insets.top + 16}]}>
         <Text style={styles.heroEyebrow}>EXAM PREP</Text>
         <Text style={styles.heroTitle}>Study Mode</Text>
@@ -53,23 +72,91 @@ export default function HomeScreen({navigation}: HomeScreenProps) {
       </View>
 
       <FlatList
-        data={examTypes}
+        data={filteredExams}
         keyExtractor={item => item}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={[
           styles.listContent,
           {paddingBottom: insets.bottom + 32},
         ]}
         ListHeaderComponent={
-          progress.totalAnswered > 0 ? (
-            <View style={styles.statsRow}>
-              <StatBox label="Answered" value={String(progress.totalAnswered)} />
-              <View style={styles.statDivider} />
-              <StatBox label="Correct" value={String(progress.totalCorrect)} />
-              <View style={styles.statDivider} />
-              <StatBox label="Accuracy" value={`${accuracy}%`} accent />
+          <>
+            {isLoaded && progress.totalAnswered > 0 && (
+              <View style={styles.statsRow}>
+                <StatBox label="Answered" value={String(progress.totalAnswered)} />
+                <View style={styles.statDivider} />
+                <StatBox label="Correct" value={String(progress.totalCorrect)} />
+                <View style={styles.statDivider} />
+                <StatBox label="Accuracy" value={`${accuracy}%`} accent />
+              </View>
+            )}
+
+            <Text style={styles.sectionLabel}>SETTINGS</Text>
+            <View style={styles.settingsCard}>
+              <Pressable
+                style={({pressed}) => [
+                  styles.settingsRow,
+                  pressed && styles.cardPressed,
+                ]}
+                onPress={() => navigation.navigate('Stats')}>
+                <View style={[styles.cardIcon, styles.statsIconBg]}>
+                  <Text style={styles.cardEmoji}>📊</Text>
+                </View>
+                <View style={styles.cardBody}>
+                  <Text style={styles.cardTitle}>Stats & History</Text>
+                  <Text style={styles.cardDesc}>
+                    View your accuracy and recent answers
+                  </Text>
+                </View>
+                <Text style={styles.chevron}>›</Text>
+              </Pressable>
+
+              <View style={styles.rowDivider} />
+
+              <Pressable
+                style={({pressed}) => [
+                  styles.settingsRow,
+                  pressed && styles.cardPressed,
+                ]}
+                onPress={() => navigation.navigate('AppLock')}>
+                <View style={[styles.cardIcon, styles.appLockIconBg]}>
+                  <Text style={styles.cardEmoji}>🔒</Text>
+                </View>
+                <View style={styles.cardBody}>
+                  <Text style={styles.cardTitle}>App Lock</Text>
+                  <Text style={styles.cardDesc}>
+                    Lock any app behind a quiz question
+                  </Text>
+                </View>
+                <Text style={styles.chevron}>›</Text>
+              </Pressable>
             </View>
-          ) : null
+
+            <Text style={[styles.sectionLabel, styles.sectionLabelSpacedTop]}>
+              AVAILABLE EXAMS
+            </Text>
+
+            <View style={styles.searchBar}>
+              <Text style={styles.searchIcon}>🔍</Text>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search exams or subjects…"
+                placeholderTextColor="#9CA3AF"
+                value={query}
+                onChangeText={setQuery}
+                returnKeyType="search"
+                clearButtonMode="while-editing"
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+              {query.length > 0 && (
+                <Pressable onPress={() => setQuery('')} hitSlop={8}>
+                  <Text style={styles.searchClear}>✕</Text>
+                </Pressable>
+              )}
+            </View>
+          </>
         }
         renderItem={({item}) => {
           const meta = EXAM_META[item];
@@ -95,28 +182,13 @@ export default function HomeScreen({navigation}: HomeScreenProps) {
             </Pressable>
           );
         }}
-        ListFooterComponent={
-          <View style={styles.settingsSection}>
-            <Text style={styles.sectionLabel}>SETTINGS</Text>
-            <View style={styles.settingsCard}>
-              <Pressable
-                style={({pressed}) => [
-                  styles.settingsRow,
-                  pressed && styles.cardPressed,
-                ]}
-                onPress={() => navigation.navigate('AppLock')}>
-                <View style={[styles.cardIcon, {backgroundColor: '#F3E8FF'}]}>
-                  <Text style={styles.cardEmoji}>🔒</Text>
-                </View>
-                <View style={styles.cardBody}>
-                  <Text style={styles.cardTitle}>App Lock</Text>
-                  <Text style={styles.cardDesc}>
-                    Lock any app behind a quiz question
-                  </Text>
-                </View>
-                <Text style={styles.chevron}>›</Text>
-              </Pressable>
-            </View>
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyEmoji}>🔎</Text>
+            <Text style={styles.emptyTitle}>No exams found</Text>
+            <Text style={styles.emptyDesc}>
+              Try searching for a subject like "Math" or "Verbal"
+            </Text>
           </View>
         }
       />
@@ -176,7 +248,7 @@ const styles = StyleSheet.create({
 
   listContent: {
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 20,
   },
 
   // Stats
@@ -184,7 +256,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    marginBottom: 16,
+    marginBottom: 20,
     paddingVertical: 16,
     shadowColor: '#4F46E5',
     shadowOffset: {width: 0, height: 2},
@@ -213,6 +285,50 @@ const styles = StyleSheet.create({
   statDivider: {
     width: StyleSheet.hairlineWidth,
     backgroundColor: '#E5E7EB',
+  },
+
+  // Section labels
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#9CA3AF',
+    letterSpacing: 0.9,
+    marginBottom: 10,
+    marginLeft: 2,
+  },
+  sectionLabelSpacedTop: {
+    marginTop: 24,
+  },
+
+  // Search
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  searchIcon: {
+    fontSize: 15,
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: '#111827',
+    padding: 0,
+  },
+  searchClear: {
+    fontSize: 13,
+    color: '#9CA3AF',
+    marginLeft: 8,
   },
 
   // Cards
@@ -276,18 +392,7 @@ const styles = StyleSheet.create({
     color: '#D1D5DB',
   },
 
-  // Settings section
-  settingsSection: {
-    marginTop: 8,
-  },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#9CA3AF',
-    letterSpacing: 0.9,
-    marginBottom: 10,
-    marginLeft: 2,
-  },
+  // Settings
   settingsCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 18,
@@ -302,5 +407,39 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,
+  },
+  appLockIconBg: {
+    backgroundColor: '#F3E8FF',
+  },
+  statsIconBg: {
+    backgroundColor: '#F0FDF4',
+  },
+  rowDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#F3F4F6',
+    marginLeft: 80,
+  },
+
+  // Empty state
+  emptyState: {
+    alignItems: 'center',
+    paddingTop: 48,
+    paddingBottom: 32,
+  },
+  emptyEmoji: {
+    fontSize: 40,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#374151',
+    marginBottom: 6,
+  },
+  emptyDesc: {
+    fontSize: 13,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    lineHeight: 19,
   },
 });

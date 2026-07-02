@@ -55,12 +55,29 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Uses release keystore when configured, falls back to debug until you run keystore setup.
             signingConfig project.hasProperty('MYAPP_UPLOAD_STORE_FILE')
                 ? signingConfigs.release
-                : signingConfigs.debug
+                : null
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+    }
+}
+
+// A debug-signed "release" build must never reach the Play Store. Fail fast with
+// setup instructions instead of silently producing an unshippable artifact.
+if (!project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+    gradle.taskGraph.whenReady { graph ->
+        def releaseRequested = graph.allTasks.any {
+            it.project == project && it.name ==~ /(assemble|bundle|install)Release/
+        }
+        if (releaseRequested) {
+            throw new GradleException(
+                "Release signing is not configured. Generate an upload keystore and add " +
+                "MYAPP_UPLOAD_STORE_FILE / MYAPP_UPLOAD_KEY_ALIAS / MYAPP_UPLOAD_STORE_PASSWORD / " +
+                "MYAPP_UPLOAD_KEY_PASSWORD to ~/.gradle/gradle.properties. " +
+                "See 'Release Keystore Setup' in CLAUDE.md."
+            )
         }
     }
 }

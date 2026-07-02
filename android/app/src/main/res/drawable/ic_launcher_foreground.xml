@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Graduation cap, kept inside the 66dp adaptive-icon safe zone -->
+    <group
+        android:scaleX="0.92"
+        android:scaleY="0.92"
+        android:pivotX="54"
+        android:pivotY="54">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M54,26 L86,42 L54,58 L22,42 Z" />
+        <path
+            android:fillColor="#FFE0E7FF"
+            android:pathData="M38,50 L38,62 Q54,70 70,62 L70,50 L54,58 Z" />
+        <path
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFBBF24"
+            android:strokeWidth="3"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M54,42 L86,42 L86,58" />
+        <path
+            android:fillColor="#FFFBBF24"
+            android:pathData="M82.6,60.5 a3.4,3.4 0 1,0 6.8,0 a3.4,3.4 0 1,0 -6.8,0 Z" />
+    </group>
+</vector>

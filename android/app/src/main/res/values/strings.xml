@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">examApp</string>
+    <string name="app_name">ExamApp</string>
     <string name="widget_description">Study flashcard widget — answer questions from your home screen</string>
     <string name="accessibility_service_desc">ExamApp monitors app launches to show a quiz question whenever a locked app is opened. Only window-change events are read — no text or personal data is accessed.</string>
 </resources>
