@@ -40,7 +40,9 @@ examApp/
 │   │   ├── QuestionReviewScreen.tsx # Single-question review (answer, explanation, history, re-practice)
 │   │   └── AppLockScreen.tsx        # App Lock settings UI
 │   ├── components/
-│   │   └── ErrorBoundary.tsx        # Root error boundary with retry UI
+│   │   ├── ErrorBoundary.tsx        # Root error boundary with retry UI
+│   │   ├── AccessibilityDisclosureModal.tsx # Shared Play-policy disclosure modal (startup + AppLockScreen)
+│   │   └── StartupPermissions.tsx   # Shows disclosure once per cold start while accessibility is disabled (Android only)
 │   ├── native/
 │   │   └── AppLockModule.ts         # TS wrapper for Android AppLockModule bridge
 │   ├── store/

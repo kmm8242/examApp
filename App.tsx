@@ -11,6 +11,7 @@ import StatsScreen from './src/screens/StatsScreen';
 import QuestionReviewScreen from './src/screens/QuestionReviewScreen';
 import {ProgressProvider} from './src/store/ProgressContext';
 import {ErrorBoundary} from './src/components/ErrorBoundary';
+import StartupPermissions from './src/components/StartupPermissions';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -22,6 +23,7 @@ export default function App() {
     <SafeAreaProvider>
       <ProgressProvider>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        <StartupPermissions />
         <NavigationContainer>
           <Stack.Navigator
             initialRouteName="Home"
